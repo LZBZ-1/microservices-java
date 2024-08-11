@@ -1,12 +1,10 @@
 package com.lzbz.client.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ClientRequest {
-    private String codigoUnico;
-    private String nombres;
-    private String apellidos;
-    private String tipoDocumento;
-    private String numeroDocumento;
+@EqualsAndHashCode(callSuper=true)
+public class ClientRequest extends BaseClientDTO {
+
 }

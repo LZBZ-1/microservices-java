@@ -1,4 +1,4 @@
-package com.lzbz.client.config;
+package com.lzbz.product.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,11 +29,11 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(HttpMethod.GET, "/api/clients").hasRole("ADMIN")
-                        .pathMatchers(HttpMethod.GET, "/api/clients/**").hasRole("ADMIN")
-                        .pathMatchers(HttpMethod.POST, "/api/clients").hasRole("ADMIN")
-                        .pathMatchers(HttpMethod.PUT, "/api/clients/**").hasRole("ADMIN")
-                        .pathMatchers(HttpMethod.DELETE, "/api/clients/**").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.GET, "/api/products").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.GET, "/api/products/**").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
                         .anyExchange().authenticated()
                 )
                 .httpBasic()

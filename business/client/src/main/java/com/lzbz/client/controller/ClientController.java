@@ -22,11 +22,11 @@ public class ClientController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<ClientResponse>> crearClient(@RequestBody ClientRequest clientRequest) {
-        return clientService.crearClient(clientRequest)
+    public Mono<ResponseEntity<ClientResponse>> createClient(@RequestBody ClientRequest clientRequest) {
+        return clientService.createClient(clientRequest)
                 .map(client -> ResponseEntity.status(HttpStatus.CREATED).body(client))
                 .onErrorResume(e -> {
-                    if (e.getMessage().contains("código único")) {
+                    if (e.getMessage().contains("unique code")) {
                         return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
                     }
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
@@ -34,28 +34,28 @@ public class ClientController {
     }
 
     @GetMapping("/{codigoUnico}")
-    public Mono<ResponseEntity<ClientResponse>> obtenerClient(@PathVariable String codigoUnico) {
-        return clientService.obtenerClientPorCodigoUnico(codigoUnico)
+    public Mono<ResponseEntity<ClientResponse>> getClient(@PathVariable Long codigoUnico) {
+        return clientService.getClientByCodigoUnico(codigoUnico)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public Flux<ClientResponse> obtenerTodosLosClients() {
-        return clientService.obtenerTodosLosClients();
+    public Flux<ClientResponse> getAllClients() {
+        return clientService.getAllClients();
     }
 
     @PutMapping("/{codigoUnico}")
-    public Mono<ResponseEntity<ClientResponse>> actualizarClient(@PathVariable String codigoUnico, @RequestBody ClientRequest clientRequest) {
-        return clientService.actualizarClient(codigoUnico, clientRequest)
+    public Mono<ResponseEntity<ClientResponse>> updateClient(@PathVariable Long codigoUnico, @RequestBody ClientRequest clientRequest) {
+        return clientService.updateClient(codigoUnico, clientRequest)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{codigoUnico}")
-    public Mono<ResponseEntity<Void>> eliminarClient(@PathVariable String codigoUnico) {
-        return clientService.eliminarClient(codigoUnico)
-                .then(Mono.just(ResponseEntity.noContent().<Void>build()))
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+    public Mono<ResponseEntity<Void>> deleteClient(@PathVariable Long codigoUnico) {
+        return clientService.deleteClient(codigoUnico)
+                .map(deleted -> deleted ? ResponseEntity.noContent().<Void>build()
+                        : ResponseEntity.notFound().build());
     }
 }
