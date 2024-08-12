@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -105,7 +106,12 @@ public class ClientController {
     public Mono<ResponseEntity<Void>> deleteClient(
             @Parameter(description = "Unique code of the client") @PathVariable Long codigoUnico) {
         return clientService.deleteClient(codigoUnico)
-                .map(deleted -> deleted ? ResponseEntity.noContent().<Void>build()
-                        : ResponseEntity.notFound().build());
+                .then(Mono.just(ResponseEntity.noContent().<Void>build()))
+                .onErrorResume(ResponseStatusException.class, e -> {
+                    if (e.getStatus() == HttpStatus.NOT_FOUND) {
+                        return Mono.just(ResponseEntity.notFound().build());
+                    }
+                    return Mono.just(ResponseEntity.status(e.getStatus()).build());
+                });
     }
 }

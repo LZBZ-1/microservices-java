@@ -6,7 +6,9 @@ import com.lzbz.client.model.Client;
 import com.lzbz.client.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,14 +27,14 @@ public class ClientService {
         return clientRepository.save(client)
                 .map(this::mapToClientResponse)
                 .onErrorResume(DuplicateKeyException.class, ex ->
-                        Mono.error(new RuntimeException("A client with this unique code already exists"))
+                        Mono.error(new ResponseStatusException(HttpStatus.CONFLICT, "A client with this unique code already exists"))
                 );
     }
 
     public Mono<ClientResponse> getClientByCodigoUnico(Long codigoUnico) {
         return clientRepository.findByCodigoUnico(codigoUnico)
                 .map(this::mapToClientResponse)
-                .switchIfEmpty(Mono.error(new RuntimeException("Client not found.")));
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found")));
     }
 
     public Flux<ClientResponse> getAllClients() {
@@ -50,13 +52,13 @@ public class ClientService {
                     return clientRepository.save(client);
                 })
                 .map(this::mapToClientResponse)
-                .switchIfEmpty(Mono.error(new RuntimeException("Client not found.")));
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found")));
     }
 
-    public Mono<Boolean> deleteClient(Long codigoUnico) {
+    public Mono<Void> deleteClient(Long codigoUnico) {
         return clientRepository.findByCodigoUnico(codigoUnico)
-                .flatMap(client -> clientRepository.delete(client).thenReturn(true))
-                .switchIfEmpty(Mono.just(false));
+                .flatMap(client -> clientRepository.delete(client))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found")));
     }
 
     private ClientResponse mapToClientResponse(Client client) {
