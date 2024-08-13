@@ -90,6 +90,19 @@ public class ProductController {
         return productService.getAllProductsByCodigoUnico(codigoUnico);
     }
 
+    @GetMapping("/secret/{encryptedCodigoUnico}")
+    @Operation(summary = "Get all products by encrypted client code", description = "Retrieves a list of all products for a specific client using an encrypted code. Requires ADMIN role.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of products retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "No products found for the given encrypted code"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role")
+    })
+    public Flux<ProductResponse> getAllProductsByEncryptedCodigoUnico(
+            @Parameter(description = "Encrypted unique code of the client") @PathVariable String encryptedCodigoUnico) {
+        return productService.getAllProductsByCodigoUnicoEncrypted(encryptedCodigoUnico);
+    }
+
     @PutMapping("/{codigoProducto}")
     @Operation(summary = "Update a product", description = "Updates the data of an existing product. Requires ADMIN role.")
     @ApiResponses(value = {

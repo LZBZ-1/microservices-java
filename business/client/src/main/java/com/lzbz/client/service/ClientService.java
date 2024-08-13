@@ -1,9 +1,12 @@
 package com.lzbz.client.service;
 
+import com.lzbz.client.common.Tracked;
+import com.lzbz.client.common.TrackingContext;
 import com.lzbz.client.dto.ClientRequest;
 import com.lzbz.client.dto.ClientResponse;
 import com.lzbz.client.model.Client;
 import com.lzbz.client.repository.ClientRepository;
+import com.lzbz.client.util.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -35,6 +38,23 @@ public class ClientService {
         return clientRepository.findByCodigoUnico(codigoUnico)
                 .map(this::mapToClientResponse)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found")));
+    }
+
+    @Tracked
+    public Mono<ClientResponse> getClientByCodigoUnicoEncrypted(String encryptedCodigoUnico) {
+        return Mono.fromCallable(() -> {
+            String trackingId = TrackingContext.getTrackingId();
+            if (trackingId == null || trackingId.isEmpty()) {
+                trackingId = TrackingContext.initializeTrackingId();
+            }
+            return trackingId;
+        }).flatMap(trackingId -> {
+            Long codigoUnico = EncryptionUtil.decrypt(encryptedCodigoUnico);
+            return clientRepository.findByCodigoUnico(codigoUnico)
+                    .map(this::mapToClientResponse)
+                    .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found")))
+                    .doFinally(signalType -> TrackingContext.clearTrackingId());
+        });
     }
 
     public Flux<ClientResponse> getAllClients() {

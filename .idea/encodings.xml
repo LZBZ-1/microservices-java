@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/business/bff/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/business/bff/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/business/client/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/business/client/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/business/product/src/main/java" charset="UTF-8" />
@@ -9,6 +11,8 @@
     <file url="file://$PROJECT_DIR$/business/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/infraestructure/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/infraestructure/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure/authserver/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure/authserver/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/infrastructure/configserver/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/infrastructure/configserver/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/infrastructure/eurekaServer/src/main/java" charset="UTF-8" />

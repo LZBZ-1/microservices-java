@@ -1,0 +1,53 @@
+version: '3'
+services:
+
+  eureka:
+    build:
+      context: ./infrastructure/eurekaServer
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+
+  bff:
+    build:
+      context: ./business/bff
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+
+  client:
+    build:
+      context: ./business/client
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+
+  product:
+    build:
+      context: ./business/product
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongodb
+
+  admin:
+    build:
+      context: ./infrastructure/springAdmin
+      dockerfile: Dockerfile
+    ports:
+      - "8062:8062"
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:

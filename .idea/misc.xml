@@ -9,11 +9,13 @@
         <option value="$PROJECT_DIR$/business/product/pom.xml" />
         <option value="$PROJECT_DIR$/infrastructure/springAdmin/pom.xml" />
         <option value="$PROJECT_DIR$/business/bff/pom.xml" />
+        <option value="$PROJECT_DIR$/infrastructure/authserver/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/infraestructure/pom.xml" />
+        <option value="$PROJECT_DIR$/infrastructure/authserver/pom.xml" />
         <option value="$PROJECT_DIR$/infrastructure/configserver/pom.xml" />
       </set>
     </option>

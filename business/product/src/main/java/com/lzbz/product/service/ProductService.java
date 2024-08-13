@@ -1,9 +1,12 @@
 package com.lzbz.product.service;
 
+import com.lzbz.product.common.Tracked;
+import com.lzbz.product.common.TrackingContext;
 import com.lzbz.product.dto.ProductRequest;
 import com.lzbz.product.dto.ProductResponse;
 import com.lzbz.product.model.Product;
 import com.lzbz.product.repository.ProductRepository;
+import com.lzbz.product.util.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -42,10 +45,27 @@ public class ProductService {
                 .map(this::mapToProductResponse);
     }
 
+    @Tracked
     public Flux<ProductResponse> getAllProductsByCodigoUnico(Long codigoUnico) {
+        return Mono.fromCallable(() -> {
+            String trackingId = TrackingContext.getTrackingId();
+            if (trackingId == null || trackingId.isEmpty()) {
+                trackingId = TrackingContext.initializeTrackingId();
+            }
+            return trackingId;
+        }).flatMapMany(trackingId ->
+                productRepository.findByCodigoUnico(codigoUnico)
+                        .map(this::mapToProductResponse)
+                        .switchIfEmpty(Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "No products found with the given codigoUnico")))
+                        .doFinally(signalType -> TrackingContext.clearTrackingId())
+        );
+    }
+
+    public Flux<ProductResponse> getAllProductsByCodigoUnicoEncrypted(String encryptedCodigoUnico) {
+        Long codigoUnico = EncryptionUtil.decrypt(encryptedCodigoUnico);
         return productRepository.findByCodigoUnico(codigoUnico)
                 .map(this::mapToProductResponse)
-                .switchIfEmpty(Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "No products found with the given codigoUnico")));
+                .switchIfEmpty(Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "No products found with the given encrypted codigoUnico")));
     }
 
     public Mono<ProductResponse> updateProduct(Long codigoProducto, ProductRequest productRequest) {

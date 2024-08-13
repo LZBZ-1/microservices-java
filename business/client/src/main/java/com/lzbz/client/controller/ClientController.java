@@ -67,6 +67,22 @@ public class ClientController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/secret/{encryptedCodigoUnico}")
+    @Operation(summary = "Get a client using encrypted code", description = "Retrieves a client by their encrypted unique code. Requires ADMIN role.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client found",
+                    content = @Content(schema = @Schema(implementation = ClientResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Client not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role")
+    })
+    public Mono<ResponseEntity<ClientResponse>> getClientEncrypted(
+            @Parameter(description = "Encrypted unique code of the client") @PathVariable String encryptedCodigoUnico) {
+        return clientService.getClientByCodigoUnicoEncrypted(encryptedCodigoUnico)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
     @GetMapping
     @Operation(summary = "Get all clients", description = "Retrieves a list of all clients. Requires ADMIN role.")
     @ApiResponses(value = {
